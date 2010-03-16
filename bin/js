@@ -1,0 +1,5 @@
+#!/bin/bash
+
+LIB_DIR=$(dirname $0)/lib
+
+java -cp ${LIB_DIR}/js.jar org.mozilla.javascript.tools.shell.Main $@
