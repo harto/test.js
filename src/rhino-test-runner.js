@@ -1,6 +1,7 @@
 /*
  * Rhino test runner for test.js.
- * $Id: rhino-test-runner.js 194 2010-01-31 10:03:29Z stuart $
+ *
+ * See LICENSE at the root of this distribution for license details.
  */
 
 /*global test */

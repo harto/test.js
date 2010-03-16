@@ -1,8 +1,7 @@
 /*
- * An xUnit-style unit test framework for JavaScript. Inspired by jsUnity and
- * JUnit.
+ * test.js - an xUnit-style unit testing framework for JavaScript
  *
- * $Id: test.js 198 2010-02-03 02:14:09Z stuart $
+ * See LICENSE at the root of this distribution for license details.
  */
 
 var test = (function () {

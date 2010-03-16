@@ -1,5 +1,7 @@
 /*
  * Unit tests for test.js.
+ *
+ * See LICENSE at the root of this distribution for license details.
  */
 
 /*global test */
