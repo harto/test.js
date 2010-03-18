@@ -74,6 +74,21 @@ test.addTestCase({
         ]);
         // TODO: test bad assertions?
     },
+    testAssertNull: function () {
+        var notNulls = [undefined, false, 0, ''];
+
+        this.assertGoodAssertion(function () { this.assertNull(null); });
+        this.assertBadAssertion(function () { this.assertNotNull(null); });
+
+        for (var i = 0; i < notNulls.length; i++) {
+            this.assertGoodAssertion(
+                function () { this.assertNotNull(notNulls[i]); }
+            );
+            this.assertBadAssertion(
+                function () { this.assertNull(notNulls[i]); }
+            );
+        }
+    },
     testAssertUndefined: function () {
         this.assertGoodAssertion(
             function () { this.assertUndefined(undefined); }

@@ -59,6 +59,12 @@ var test = (function () {
                 expected !== actual,
                 msg || fmt('`{}` === `{}`', expected, actual));
         },
+        assertNull: function (value, msg) {
+            this.assertIdentical(null, value, msg);
+        },
+        assertNotNull: function (value, msg) {
+            this.assertNotIdentical(null, value, msg);
+        },
         assertUndefined: function (value, msg) {
             this.assertIdentical(undefined, value, msg);
         },
