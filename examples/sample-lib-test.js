@@ -2,14 +2,20 @@
  * Tests sample-lib.js.
  */
 
-// FIXME: test.load is broken - should provide sample-lib.js as launcher arg
-test.load('examples/sample-lib.js');
-
 test.addTestCase({
-    testFrobnicateExists: function () {
-        this.assertNotUndefined(frobnicate);
+    setUp: function () {
+        this.log('setting up');
     },
-    testBar: function () {
-        this.assertIdentical('baz', frobnicate('bar'));
+    tearDown: function () {
+        this.log('tearing down');
+    },
+    testFail: function () {
+        this.fail('oops');
+    },
+    testFrobnicateFoo: function () {
+        this.assertEqual('baz', frobnicate('bar'));
+        this.assertNull(frobnicate(42));
+        this.assertEqual(99, frobnicate('quux'));
+        this.assertUndefined(frobnicate('blabla'));
     }
 });
