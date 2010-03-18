@@ -9,12 +9,11 @@
 (function (args) {
 
     if (!args.length) {
-        print('Usage: rhino-test-runner.js <file>.js [<file>.js ...]');
+        print('Usage: rhino-test.js <files-and-tests.js> [<file>.js ...]');
     }
 
     // Attach Rhino implementations of required methods
-    test.print = print;
-    test.load = load;
+    test.setPrintFn(print);
 
     for (var i = 0; i < args.length; i++) {
         load(args[i]);

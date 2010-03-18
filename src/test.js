@@ -183,18 +183,27 @@ var test = (function () {
         tests.push(t);
     };
 
-    // Writes a message. This should be specified by the test runner.
-    test.print = function (msg) {
-        throw new Error('Not implemented: test.print(msg)');
+    /*
+     * Writes a message. This should be specified by the test runner
+     * via test.setPrintFn(fn)
+     */
+    var print = function (msg) {
+        throw new Error('not implemented: set print function ' +
+                        'via test.setPrintFn(fn)');
     };
 
-    // Loads an external script. This should be specified by the test runner.
-    test.load = function (script) {
-        throw new Error('Not implemented: test.load(script)');
+    test.setPrintFn = function (fn) {
+        print = fn;
     };
 
+    /**
+     * Logs a formatted message using the environment-specific print function.
+     * Parameters replace occurrences of '{}' in the first argument, e.g.:
+     *
+     * test.log('{}, {}!', 'Hello', 'world') -> 'Hello, world!'
+     */
     test.log = function (/*s, params...*/) {
-        this.print(fmt.apply(null, arguments));
+        print(fmt.apply(null, arguments));
     };
 
     /**
