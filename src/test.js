@@ -113,6 +113,10 @@ var test = (function () {
     TestCase.prototype.tearDown = function () {};
     // Provide assertions
     augment(TestCase.prototype, assertions);
+    // Provide logging
+    TestCase.prototype.log = function () {
+        test.log.apply(test, arguments);
+    };
 
     // A simple way of grouping TestCases into a (nestable) hierarchy.
     function TestSuite(members) {
