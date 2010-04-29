@@ -10,25 +10,30 @@
  * Test assertions
  */
 test.addTestCase({
+
     assertBadAssertion: function (fn) {
         this.assertThrows(fn,
                           'AssertionError',
     		          'Expected assertion error: ' + fn);
     },
+
     assertGoodAssertion: function (fn) {
         // just execute - no errors should occur
         fn.apply(this);
     },
+
     assertBadAssertions: function (badAssertions) {
         for (var a in badAssertions) {
             this.assertBadAssertion(badAssertions[a]);
         }
     },
+
     assertGoodAssertions: function (goodAssertions) {
         for (var a in goodAssertions) {
             this.assertGoodAssertion(goodAssertions[a]);
         }
     },
+
     testAssert: function () {
         var trues = [true, 1, 'foo', {}, []];
         var falses = [false, undefined, null, 0, ''];
@@ -39,6 +44,7 @@ test.addTestCase({
             this.assertBadAssertion(function () { this.assert(falses[v]); });
         }
     },
+
     testAssertEqual: function () {
         /*
          * Returns a bunch of functions that exercise the given assertion,
@@ -67,6 +73,21 @@ test.addTestCase({
         this.assertBadAssertions(createEqualityAssertions(this.assertNotEqual));
         this.assertBadAssertions(createInequalityAssertions(this.assertEqual));
     },
+
+    testAssertMembersEqual: function () {
+        this.assertGoodAssertion(function () {
+            this.assertMembersEqual(
+                { foo: 3, bar: 'baz' },
+                { bar: 'baz', foo: 3 });
+        });
+
+        this.assertBadAssertion(function () {
+            this.assertMembersEqual(
+                { foo: 3, bar: 'baz' },
+                { foo: 3, bar: 'baz', bla: 'quux' });
+        });
+    },
+
     testAssertIdentical: function () {
         this.assertGoodAssertions([
             function () { this.assertIdentical(0, 0); },
@@ -74,6 +95,7 @@ test.addTestCase({
         ]);
         // TODO: test bad assertions?
     },
+
     testAssertNull: function () {
         var notNulls = [undefined, false, 0, ''];
 
@@ -89,6 +111,7 @@ test.addTestCase({
             );
         }
     },
+
     testAssertUndefined: function () {
         this.assertGoodAssertion(
             function () { this.assertUndefined(undefined); }
@@ -98,6 +121,7 @@ test.addTestCase({
             function () { this.assertUndefined(false); }
         ]);
     },
+
     testAssertNotUndefined: function () {
         this.assertGoodAssertions([
             function () { this.assertNotUndefined(null); },
@@ -107,6 +131,7 @@ test.addTestCase({
             function () { this.assertNotUndefined(undefined); }
         );
     },
+
     testAssertArraysEqual: function () {
         this.assertGoodAssertion(function () {
             this.assertArraysEqual([1, 2, 3], [1, '2', 3]);
@@ -115,9 +140,11 @@ test.addTestCase({
             this.assertArraysEqual([1, 3, 2], [1, 2, 3]);
         });
     },
+
     testFail: function () {
         this.assertBadAssertion(function () { this.fail(); });
     },
+
     testAssertThrows: function () {
         function errorThrower() {
             throw new Error('oops');
@@ -130,6 +157,7 @@ test.addTestCase({
  * Test basic method name recognition and order of execution.
  */
 test.addTestCase({
+
     /**
      * Check ordering of case setUp/tearDown and test methods.
      */
@@ -156,6 +184,7 @@ test.addTestCase({
         ];
         this.assertArraysEqual(expected, invoked);
     },
+
     /**
      * Check ordering of suite setUp/tearDown and nested cases.
      */
@@ -186,11 +215,13 @@ test.addTestCase({
         ];
         this.assertArraysEqual(expected, invoked);
     },
+
     testCaseDefaultSetUpAndTearDown: function () {
         var testCase = test.testCase({});
         testCase.run();
         // should complete without error
     },
+
     testSuiteDefaultSetUpAndTearDown: function () {
         var suite = test.testSuite({});
         suite.run();
@@ -202,6 +233,7 @@ test.addTestCase({
  * Test messages from failed assertions. TODO: Finish
  */
 test.addTestCase({
+
     captureLogMessage: function (fn) {
         var oldLogFn = test.log;
         var captured;

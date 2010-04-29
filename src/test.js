@@ -49,6 +49,24 @@ var test = (function () {
                 expected != actual,
                 msg || fmt('`{}` == `{}`', expected, actual));
         },
+        assertMembersEqual: function(expected, actual, msg) {
+            var nExpectedProps = 0, nActualProps = 0;
+            for (var m in expected) {
+                if (expected.hasOwnProperty(m)) {
+                    nExpectedProps++;
+                    this.assert(actual.hasOwnProperty(m), msg);
+                    this.assertEqual(expected[m], actual[m], msg);
+                }
+            }
+            for (m in actual) {
+                if (actual.hasOwnProperty(m)) {
+                    nActualProps++;
+                }
+            }
+            this.assertIdentical(
+                nExpectedProps, nActualProps,
+                msg || 'unequal number of properties');
+        },
         assertIdentical: function (expected, actual, msg) {
             this.assert(
                 expected === actual,
