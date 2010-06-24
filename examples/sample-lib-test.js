@@ -2,6 +2,10 @@
  * Tests sample-lib.js.
  */
 
+/*global test, frobnicate */
+
+test.load('sample-lib.js');
+
 test.addTestCase({
     setUp: function () {
         this.log('setting up');

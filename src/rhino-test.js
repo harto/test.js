@@ -12,11 +12,25 @@
         print('Usage: rhino-test.js <files-and-tests.js> [<file>.js ...]');
     }
 
-    // Attach Rhino implementations of required methods
+    // Attach Rhino-specific functions
     test.setPrintFn(print);
 
-    for (var i = 0; i < args.length; i++) {
-        load(args[i]);
+    var i, path, dir;
+    for (i = 0; i < args.length; i++) {
+        path = args[i];
+
+        // push directory while script executes
+        // TODO: support non-POSIX path separators
+        // TODO: don't load scripts multiple times? maybe
+        dir = path.substring(0, path.lastIndexOf('/'));
+        test.setLoadFn(function (path) {
+            var fullPath = dir + '/' + path;
+            test.log('loading {}', fullPath);
+            load(fullPath);
+        });
+
+        // execute test script with rebound test.load() function
+        load(path);
     }
 
     var results = test.run();

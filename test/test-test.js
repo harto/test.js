@@ -1,8 +1,8 @@
 /*
  * Unit tests for test.js.
- *
- * See LICENSE at the root of this distribution for license details.
  */
+
+// can't rely on test.load() to provide `test` object - assume already loaded
 
 /*global test */
 

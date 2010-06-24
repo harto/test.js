@@ -208,8 +208,9 @@ var test = (function () {
     };
 
     /*
-     * Writes a message. This should be specified by the test runner
-     * via test.setPrintFn(fn)
+     * Writes a message to some environment-specific location. This could be a
+     * console, a file, an HTML element or anything else. The function should be
+     * specified by the bootstrap script via test.setPrintFn(fn).
      */
     var print = function (msg) {
         throw new Error('not implemented: set print function ' +
@@ -218,6 +219,20 @@ var test = (function () {
 
     test.setPrintFn = function (fn) {
         print = fn;
+    };
+
+    /*
+     * Loads a JavaScript file relative to the currently executing test script.
+     * This function should be specified by the test runner via
+     * test.setLoadFn(fn).
+     */
+    test.load = function (path) {
+        throw new Error('not implemented: set load function ' +
+                        'via test.setLoadFn(fn)');
+    };
+
+    test.setLoadFn = function (fn) {
+        test.load = fn;
     };
 
     /**
