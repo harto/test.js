@@ -17,7 +17,8 @@
 
     function dirname(path) {
         // TODO: support non-POSIX path separators?
-        return path.substring(0, path.lastIndexOf('/'));
+        var dir = path.substring(0, path.lastIndexOf('/'));
+        return dir || '.';
     }
 
     // Load each script from command-line
