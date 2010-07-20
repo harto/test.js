@@ -30,31 +30,41 @@ var test = (function () {
     }
     AssertionError.prototype = Error.prototype;
 
+    function _assert(cond/*, msgs*/) {
+        if (!cond) {
+            var msgs = Array.prototype.splice.call(arguments, 1);
+            throw new AssertionError(msgs.join('\n    '));
+        }
+    }
+                
     var assertions = {
         assert: function (value, msg) {
-            if (!value) {
-                throw new AssertionError(msg || fmt('{}', value));
-            }
+            _assert(value, '' + value, msg);
         },
         assertFalse: function (value, msg) {
-            this.assert(!value, msg);
+            _assert(!value, '' + value, msg);
         },
         assertEqual: function (expected, actual, msg) {
-            this.assert(
+            _assert(
                 expected == actual,
-                msg || fmt('`{}` != `{}`', expected, actual));
+                fmt('`{}` != `{}`', expected, actual),
+                msg);
         },
         assertNotEqual: function (expected, actual, msg) {
-            this.assert(
+            _assert(
                 expected != actual,
-                msg || fmt('`{}` == `{}`', expected, actual));
+                fmt('`{}` == `{}`', expected, actual),
+                msg);
         },
         assertMembersEqual: function(expected, actual, msg) {
             var nExpectedProps = 0, nActualProps = 0;
             for (var m in expected) {
                 if (expected.hasOwnProperty(m)) {
                     nExpectedProps++;
-                    this.assert(actual.hasOwnProperty(m), msg);
+                    _assert(
+                        actual.hasOwnProperty(m),
+                        fmt('missing property {}', m),
+                        msg);
                     this.assertEqual(expected[m], actual[m], msg);
                 }
             }
@@ -63,19 +73,22 @@ var test = (function () {
                     nActualProps++;
                 }
             }
-            this.assertIdentical(
-                nExpectedProps, nActualProps,
-                msg || 'unequal number of properties');
+            _assert(
+                nExpectedProps === nActualProps,
+                fmt('expected {} props, got {}', nExpectedProps, nActualProps),
+                msg);
         },
         assertIdentical: function (expected, actual, msg) {
-            this.assert(
+            _assert(
                 expected === actual,
-                msg || fmt('`{}` !== `{}`', expected, actual));
+                fmt('`{}` !== `{}`', expected, actual),
+                msg);
         },
         assertNotIdentical: function (expected, actual, msg) {
-            this.assert(
+            _assert(
                 expected !== actual,
-                msg || fmt('`{}` === `{}`', expected, actual));
+                fmt('`{}` === `{}`', expected, actual),
+                msg);
         },
         assertNull: function (value, msg) {
             this.assertIdentical(null, value, msg);
@@ -91,19 +104,22 @@ var test = (function () {
         },
         assertArraysEqual: function (expected, actual, msg) {
             var errMsg = fmt('[{}] != [{}]', expected, actual);
-            this.assertIdentical(expected.length, actual.length, errMsg);
+            _assert(expected.length === actual.length, errMsg, msg);
             for (var i = 0; i < expected.length; i++) {
-                this.assertEqual(expected[i], actual[i], msg || errMsg);
+                _assert(expected[i] == actual[i], errMsg, msg);
             }
         },
         assertThrows: function (fn, errorName, msg) {
             try {
-                fn.apply(this);
+                fn.call(this);
             } catch (e) {
-                this.assert(e.name === errorName);
+                _assert(
+                    e.name === errorName,
+                    fmt('unexpected error: {}', errorName),
+                    msg);
                 return;
             }
-            this.fail(msg || fmt('Expecting error {}', errorName));
+            this.fail(fmt('Expecting error {}', errorName));
         },
         fail: function (msg) {
             throw new AssertionError(msg);
