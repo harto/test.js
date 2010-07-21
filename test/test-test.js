@@ -2,96 +2,107 @@
  * Unit tests for test.js.
  */
 
-// can't rely on test.load() to provide `test` object - assume already loaded
-
 /*global test */
+
+function assertBadAssertion(fn) {
+    test.assertThrows(fn,
+                      'AssertionError',
+    		      'Expected assertion error: ' + fn);
+};
+
+function assertGoodAssertion(fn) {
+    // just execute - no errors should occur
+    fn.apply(test);
+};
+
+function assertBadAssertions(badAssertions) {
+    for (var a in badAssertions) {
+        assertBadAssertion(badAssertions[a]);
+    }
+};
+
+function assertGoodAssertions(goodAssertions) {
+    for (var a in goodAssertions) {
+        assertGoodAssertion(goodAssertions[a]);
+    }
+};
+
+/**
+ * Returns a bunch of functions that exercise the given assertion, using
+ * logically equal values as input.
+ */
+function createEqualityAssertions(assertion) {
+    return [
+        function () { assertion.call(this, 0, ''); },
+        function () { assertion.call(this, 0, '0'); },
+        function () { assertion.call(this, 0, 0); },
+        function () { assertion.call(this, null, undefined); }
+    ];
+}
+
+/**
+ * Creates an array of functions that exercise the given assertion, using
+ * logically inequal values as input.
+ */
+function createInequalityAssertions(assertion) {
+    return [
+        function () { assertion.call(this, 1, 2); }
+    ];
+}
 
 /**
  * Test assertions
  */
 test.addTestCase({
 
-    assertBadAssertion: function (fn) {
-        this.assertThrows(fn,
-                          'AssertionError',
-    		          'Expected assertion error: ' + fn);
-    },
-
-    assertGoodAssertion: function (fn) {
-        // just execute - no errors should occur
-        fn.apply(this);
-    },
-
-    assertBadAssertions: function (badAssertions) {
-        for (var a in badAssertions) {
-            this.assertBadAssertion(badAssertions[a]);
-        }
-    },
-
-    assertGoodAssertions: function (goodAssertions) {
-        for (var a in goodAssertions) {
-            this.assertGoodAssertion(goodAssertions[a]);
-        }
-    },
-
     testAssert: function () {
         var trues = [true, 1, 'foo', {}, []];
         var falses = [false, undefined, null, 0, ''];
         for (var v in trues) {
-            this.assertGoodAssertion(function () { this.assert(trues[v]); });
+            assertGoodAssertion(function () { test.assert(trues[v]); });
         }
         for (v in falses) {
-            this.assertBadAssertion(function () { this.assert(falses[v]); });
+            assertBadAssertion(function () { test.assert(falses[v]); });
         }
     },
 
     testAssertEqual: function () {
-        /*
-         * Returns a bunch of functions that exercise the given assertion,
-         * using logically equal values as input.
-         */
-        function createEqualityAssertions(assertion) {
-            return [
-                function () { assertion.call(this, 0, ''); },
-                function () { assertion.call(this, 0, '0'); },
-                function () { assertion.call(this, 0, 0); },
-                function () { assertion.call(this, null, undefined); }
-            ];
-        }
-        /*
-         * Returns a bunch of functions that exercise the given assertion,
-         * using logically inequal values as input.
-         */
-        function createInequalityAssertions(assertion) {
-            return [
-                function () { assertion.call(this, 1, 2); }
-            ];
-        }
+        assertGoodAssertions(createEqualityAssertions(test.assertEqual));
+        assertGoodAssertions(createInequalityAssertions(test.assertNotEqual));
+        assertBadAssertions(createEqualityAssertions(test.assertNotEqual));
+        assertBadAssertions(createInequalityAssertions(test.assertEqual));
+    },
 
-        this.assertGoodAssertions(createEqualityAssertions(this.assertEqual));
-        this.assertGoodAssertions(createInequalityAssertions(this.assertNotEqual));
-        this.assertBadAssertions(createEqualityAssertions(this.assertNotEqual));
-        this.assertBadAssertions(createInequalityAssertions(this.assertEqual));
+    testAssertDoublesEqual: function () {
+        assertGoodAssertions([
+            function () { test.assertDoublesEqual(2, 2, 0); },
+            function () { test.assertDoublesEqual(0.11, 0.12, 0.01); }
+        ]);
+        assertBadAssertion(
+            function () {
+                test.assertDoublesEqual(0.11, 0.12, 0.001);
+            }
+        );
     },
 
     testAssertMembersEqual: function () {
-        this.assertGoodAssertion(function () {
-            this.assertMembersEqual(
+        assertGoodAssertion(function () {
+            test.assertMembersEqual(
                 { foo: 3, bar: 'baz' },
                 { bar: 'baz', foo: 3 });
         });
 
-        this.assertBadAssertion(function () {
-            this.assertMembersEqual(
+        assertBadAssertion(function () {
+            test.assertMembersEqual(
                 { foo: 3, bar: 'baz' },
                 { foo: 3, bar: 'baz', bla: 'quux' });
         });
     },
 
     testAssertIdentical: function () {
-        this.assertGoodAssertions([
-            function () { this.assertIdentical(0, 0); },
-            function () { this.assertIdentical('foo', 'foo'); }
+        assertGoodAssertions([
+            function () { test.assertIdentical(0, 0); },
+            function () { test.assertIdentical('foo', 'foo'); }
         ]);
         // TODO: test bad assertions?
     },
@@ -99,57 +110,57 @@ test.addTestCase({
     testAssertNull: function () {
         var notNulls = [undefined, false, 0, ''];
 
-        this.assertGoodAssertion(function () { this.assertNull(null); });
-        this.assertBadAssertion(function () { this.assertNotNull(null); });
+        assertGoodAssertion(function () { test.assertNull(null); });
+        assertBadAssertion(function () { test.assertNotNull(null); });
 
         for (var i = 0; i < notNulls.length; i++) {
-            this.assertGoodAssertion(
-                function () { this.assertNotNull(notNulls[i]); }
+            assertGoodAssertion(
+                function () { test.assertNotNull(notNulls[i]); }
             );
-            this.assertBadAssertion(
-                function () { this.assertNull(notNulls[i]); }
+            assertBadAssertion(
+                function () { test.assertNull(notNulls[i]); }
             );
         }
     },
 
     testAssertUndefined: function () {
-        this.assertGoodAssertion(
-            function () { this.assertUndefined(undefined); }
+        assertGoodAssertion(
+            function () { test.assertUndefined(undefined); }
         );
-        this.assertBadAssertions([
-            function () { this.assertUndefined(null); },
-            function () { this.assertUndefined(false); }
+        assertBadAssertions([
+            function () { test.assertUndefined(null); },
+            function () { test.assertUndefined(false); }
         ]);
     },
 
     testAssertNotUndefined: function () {
-        this.assertGoodAssertions([
-            function () { this.assertNotUndefined(null); },
-            function () { this.assertNotUndefined(false); }
+        assertGoodAssertions([
+            function () { test.assertNotUndefined(null); },
+            function () { test.assertNotUndefined(false); }
         ]);
-        this.assertBadAssertion(
-            function () { this.assertNotUndefined(undefined); }
+        assertBadAssertion(
+            function () { test.assertNotUndefined(undefined); }
         );
     },
 
     testAssertArraysEqual: function () {
-        this.assertGoodAssertion(function () {
-            this.assertArraysEqual([1, 2, 3], [1, '2', 3]);
+        assertGoodAssertion(function () {
+            test.assertArraysEqual([1, 2, 3], [1, '2', 3]);
         });
-        this.assertBadAssertion(function () {
-            this.assertArraysEqual([1, 3, 2], [1, 2, 3]);
+        assertBadAssertion(function () {
+            test.assertArraysEqual([1, 3, 2], [1, 2, 3]);
         });
     },
 
     testFail: function () {
-        this.assertBadAssertion(function () { this.fail(); });
+        assertBadAssertion(function () { test.fail(); });
     },
 
     testAssertThrows: function () {
         function errorThrower() {
             throw new Error('oops');
         }
-        this.assertThrows(errorThrower, 'Error');
+        test.assertThrows(errorThrower, 'Error');
     }
 });
 

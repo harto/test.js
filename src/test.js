@@ -56,7 +56,7 @@ var test = (function () {
                 fmt('`{}` == `{}`', expected, actual),
                 msg);
         },
-        assertMembersEqual: function(expected, actual, msg) {
+        assertMembersEqual: function (expected, actual, msg) {
             var nExpectedProps = 0, nActualProps = 0;
             for (var m in expected) {
                 if (expected.hasOwnProperty(m)) {
@@ -76,6 +76,12 @@ var test = (function () {
             _assert(
                 nExpectedProps === nActualProps,
                 fmt('expected {} props, got {}', nExpectedProps, nActualProps),
+                msg);
+        },
+        assertDoublesEqual: function (expected, actual, delta, msg) {
+            _assert(
+                Math.abs(expected - actual) <= delta,
+                fmt('|{} - {}| > {}', expected, actual, delta),
                 msg);
         },
         assertIdentical: function (expected, actual, msg) {
