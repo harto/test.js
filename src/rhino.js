@@ -9,7 +9,7 @@
 (function (args) {
 
     if (!args.length) {
-        print('Usage: rhino-test.js <files-and-tests.js> [<file>.js ...]');
+        print('Usage: rhino.js <files-and-tests.js> [<file>.js ...]');
     }
 
     // Attach Rhino-specific functions
