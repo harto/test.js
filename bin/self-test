@@ -1,7 +1,0 @@
-#!/bin/bash
-
-BIN_DIR=$(dirname $0)
-TEST_DIR=$(dirname $BIN_DIR)/test
-
-#jslint src/*.js
-$BIN_DIR/test.js $TEST_DIR/test-test.js
